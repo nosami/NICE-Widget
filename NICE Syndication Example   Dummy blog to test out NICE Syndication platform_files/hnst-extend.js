@@ -7,15 +7,15 @@ function informationTypesFor(entity,callback)
                     "Accept": "application/json",
                     "API-Key": "4b9eae0d-a570-43d8-929f-308bf20991de"
            },
-                success: function (data, textStatus, jqXhr) {
-                    if (textStatus !== "success") {
-                        alert("Resource request failed");
-                    }
-                    else {
-                        callback(data);
-                    }
-                }
-            }); 
+		success: function (data, textStatus, jqXhr) {
+			if (textStatus !== "success") {
+				alert("Resource request failed");
+			}
+			else {
+				callback(data);
+			}
+		}
+	}); 
 }
 
 function markupFor(entity,callback)
@@ -52,8 +52,8 @@ function filterEntitiesForHealthcare(entities)
      if(entities[i].type === 'HealthCondition' || entities[i].type === 'Drug')
      {
        filtered.push({
-            text = entities[i].text,
-			markup = function(callback) {markupFor(entities[i],callback)}
+            text : entities[i].text,
+			markup : function(callback) {markupFor(entities[i],callback)}
 	   );
      }
    } 
