@@ -1,3 +1,30 @@
+function entitiesForPage(uri,entityHandler) 
+{
+  jQuery.ajax({
+    url:"http://access.alchemyapi.com/calls/url/URLGetRankedNamedEntities?apikey=630ef77c0328ba4cf99c94c7474dd44f8e79f4f4&url=" + uri + "&outputMode=json",
+    crossDomain:true,
+    dataType: 'jsonp',
+    jsonp: 'jsonp',
+    success: function(d,s,x) {entityHandler(d.entities);}
+  });
+};
+
+function filterEntitiesForHealthcare(entities)
+{
+   console.log(entities);
+   var filtered = [];
+   
+   for(i = 0;i != entities.length; i++)
+   {
+     if(entities[i].type === 'HealthCondition' || entities[i].type === 'Drug')
+     {
+       filtered.push(entities[i].text);
+     }
+   } 
+
+   return filtered;
+}
+
 jQuery.fn.extend({
   highlight: function(term, insensitive, span_class){
     var regex = new RegExp('(<[^>]*>)|(\\b'+ term.replace(/([-.*+?^${}()|[\]\/\\])/g,"\\$1") +')', insensitive ? 'ig' : 'g');
@@ -7,12 +34,17 @@ jQuery.fn.extend({
   }
 });
 
-
-
 jQuery(document).ready((function($)
 {
-  var hnst_query = new Array('catheter','infection','patient');
-	
+  entitiesForPage("http://publications.nice.org.uk/infection-control-cg2/guidance",
+  function(entities) 
+  {
+     filtered = filterEntitiesForHealthcare(entities);
+     console.log(filtered);
+     inner(filtered);
+  });
+
+  function inner(hnst_query) {
   if(typeof(hnst_query) != 'undefined'){
     var area; var i; var s;
     for (s in hnst_areas){
@@ -48,4 +80,6 @@ jQuery(document).ready((function($)
 
 
   }
+}
 }));
+
