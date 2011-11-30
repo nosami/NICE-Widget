@@ -54,7 +54,13 @@ function buildPopupStuff(entities)
 
 	function connectBubble()
 	{
+<<<<<<< HEAD
 		jQuery('.bubbleInfo').each(function () {
+=======
+		
+/*		
+	$('.bubbleInfo').each(function () {
+>>>>>>> 805cb084627e54adb2de48e24c81ba1e31cb7b42
 	            var distance = 10;
 	            var time = 250;
 	            var hideDelay = 500;
@@ -106,12 +112,13 @@ function buildPopupStuff(entities)
 	                return false;
 	            });
 	        });
+	*/
 	}
 
 	connectBubble();
 }
 
-entitiesForPage("http://publications.nice.org.uk/infection-control-cg2/guidance",
+entitiesForPage("http://briansamson.info/nice/",
   function(entities) 
   {
      var filtered = filterEntitiesForHealthcare(entities);
