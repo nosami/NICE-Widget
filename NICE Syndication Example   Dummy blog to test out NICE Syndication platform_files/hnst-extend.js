@@ -30,7 +30,8 @@ jQuery(document).ready((function($)
 
 	function connectBubble()
 	{
-
+		
+/*		
 	$('.bubbleInfo').each(function () {
 	            var distance = 10;
 	            var time = 250;
@@ -83,6 +84,7 @@ jQuery(document).ready((function($)
 	                return false;
 	            });
 	        });
+	*/
 	}
 
 
