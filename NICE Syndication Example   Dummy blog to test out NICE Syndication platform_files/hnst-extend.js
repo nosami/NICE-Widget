@@ -1,3 +1,36 @@
+
+function informationTypesFor(entity,callback)
+{
+   $.ajax({url: "https://api.nice.org.uk/services/search/results/filterby/Types of information?q=" + entity.replace(" ","+"),
+           headers: 
+           {
+                    "Accept": "application/json",
+                    "API-Key": "4b9eae0d-a570-43d8-929f-308bf20991de"
+           },
+                success: function (data, textStatus, jqXhr) {
+                    if (textStatus !== "success") {
+                        alert("Resource request failed");
+                    }
+                    else {
+                        callback(data);
+                    }
+                }
+            }); 
+}
+
+function markupFor(entity,callback)
+{
+   informationTypesFor(entity,function(informationTypes) {
+       var markup = "<ul>";
+	   for(i = 0; i != informationTypes.length;i++)
+	   {
+	     markup += '<li><a href="' + informationTypes[i].Uri + '">' + informationTypes[i].Title + '</a></li>';  
+	   }
+	   markup += "</ul>";
+	   callback(markup);
+   });
+}
+
 function entitiesForPage(uri,entityHandler) 
 {
   jQuery.ajax({
@@ -18,7 +51,10 @@ function filterEntitiesForHealthcare(entities)
    {
      if(entities[i].type === 'HealthCondition' || entities[i].type === 'Drug')
      {
-       filtered.push(entities[i].text);
+       filtered.push({
+            text = entities[i].text,
+			markup = function(callback) {markupFor(entities[i],callback)}
+	   );
      }
    } 
 
@@ -45,41 +81,56 @@ jQuery(document).ready((function($)
   });
 
   function inner(hnst_query) {
-  if(typeof(hnst_query) != 'undefined'){
-    var area; var i; var s;
-    for (s in hnst_areas){
-      area = $(hnst_areas[s]);
-      if (area.length != 0){
-        for (var l = 0; l<area.length; l++) {
-		for (i in hnst_query){
-		  area.eq(l).highlight(hnst_query[i], 1, 'trigger');
+	if(typeof(hnst_query) != 'undefined'){
+		var area; var i; var s;
+		for (s in hnst_areas){
+		  area = $(hnst_areas[s]);
+		  if (area.length != 0){
+			for (var l = 0; l<area.length; l++) {
+			for (i in hnst_query){
+			  area.eq(l).highlight(hnst_query[i].text, 1, 'trigger');
+			}
+		}
+			break;
+		  }
 		}
 	}
-      	break;
-      }
-    }
-
+	
 	$('.trigger').CreateBubblePopup({
-												selectable: true,
+			selectable: true,
 
-												position : 'top',
-												align	 : 'center',
+			position : 'top',
+			align	 : 'center',
 
-												innerHtml: 'Take a look to the HTML source of this page <br /> \
-															to learn how the plugin works!',
+			innerHtml: 'Loading..',
 
-												innerHtmlStyle: {
-																	color:'#FFFFFF', 
-																	'text-align':'center'
-																},
+			innerHtmlStyle: {
+								color:'#FFFFFF', 
+								'text-align':'center'
+							},
 
-												themeName: 	'all-black',
-												themePath: 	'http://www.vegabit.com/examples/images/jquerybubblepopup-theme'
+			themeName: 	'all-black',
+			themePath: 	'http://www.vegabit.com/examples/images/jquerybubblepopup-theme'
 
-											});
+	});
+    
+	$('.trigger').mouseover(function(){
+				//get a reference object for "this" target element
+				var button = $(this);
+				
+				var entityToLoadSearchFor;
+				for(int i = 0;i != hnst_query.length;i++)
+				{ 
+				   if(hnst_query[i].text == button.innerText)
+				   {
+				      entityToLoadSearchFor = hnst_query[i];
+				   }
+				}
+				
+				entityToLoadSearchFor.markup(function(markup) {button.SetBubblePopupInnerHtml(markup,true);});
+		}); //end mouseover event
+	
 
-
-  }
 }
 }));
 
