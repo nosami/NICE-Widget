@@ -7,16 +7,40 @@ jQuery.fn.extend({
   }
 });
 
-
-
-jQuery(document).ready((function($)
+function entitiesForPage(uri,entityHandler) 
 {
-  var hnst_query = new Array('catheter','infection','patient');
+  jQuery.ajax({
+    url:"http://access.alchemyapi.com/calls/url/URLGetRankedNamedEntities?apikey=630ef77c0328ba4cf99c94c7474dd44f8e79f4f4&url=" + uri + "&outputMode=json",
+    crossDomain:true,
+    dataType: 'jsonp',
+    jsonp: 'jsonp',
+    success: function(d,s,x) {entityHandler(d.entities);}
+  });
+};
+
+function filterEntitiesForHealthcare(entities)
+{
+   console.log(entities);
+   var filtered = [];
+   
+   for(i = 0;i != entities.length; i++)
+   {
+     if(entities[i].type === 'HealthCondition' || entities[i].type === 'Drug')
+     {
+       filtered.push(entities[i].text);
+     }
+   } 
+
+   return filtered;
+}
+function buildPopupStuff(entities)
+{
+  var hnst_query = entities;
 	
-  if(typeof(hnst_query) != 'undefined'){
+	if(typeof(hnst_query) != 'undefined'){
     var area; var i; var s;
     for (s in hnst_areas){
-      area = $(hnst_areas[s]);
+      area = jQuery(hnst_areas[s]);
       if (area.length != 0){
         for (var l = 0; l<area.length; l++) {
 		for (i in hnst_query){
@@ -26,12 +50,11 @@ jQuery(document).ready((function($)
       	break;
       }
     }
-
+	}
 
 	function connectBubble()
 	{
-
-	$('.bubbleInfo').each(function () {
+		jQuery('.bubbleInfo').each(function () {
 	            var distance = 10;
 	            var time = 250;
 	            var hideDelay = 500;
@@ -43,7 +66,7 @@ jQuery(document).ready((function($)
 	            var trigger = $('.trigger');
 	            var info = $('.popup', this).css('opacity', 0);
 
-	            $('.trigger').mouseover(function () {
+	            jQuery('.trigger').mouseover(function () {
 	                if (hideDelayTimer) clearTimeout(hideDelayTimer);
 	                if (beingShown || shown) {
 	                    // don't trigger the animation again
@@ -85,12 +108,16 @@ jQuery(document).ready((function($)
 	        });
 	}
 
-
 	connectBubble();
+}
 
-
-
-
-
+entitiesForPage("http://briansamson.info/nice/",
+  function(entities) 
+  {
+     var filtered = filterEntitiesForHealthcare(entities);
+     console.log(filtered);
+	 buildPopupStuff(filtered);
   }
-}));
+);
+
+
