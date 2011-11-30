@@ -7,40 +7,16 @@ jQuery.fn.extend({
   }
 });
 
-function entitiesForPage(uri,entityHandler) 
-{
-  jQuery.ajax({
-    url:"http://access.alchemyapi.com/calls/url/URLGetRankedNamedEntities?apikey=630ef77c0328ba4cf99c94c7474dd44f8e79f4f4&url=" + uri + "&outputMode=json",
-    crossDomain:true,
-    dataType: 'jsonp',
-    jsonp: 'jsonp',
-    success: function(d,s,x) {entityHandler(d.entities);}
-  });
-};
 
-function filterEntitiesForHealthcare(entities)
-{
-   console.log(entities);
-   var filtered = [];
-   
-   for(i = 0;i != entities.length; i++)
-   {
-     if(entities[i].type === 'HealthCondition' || entities[i].type === 'Drug')
-     {
-       filtered.push(entities[i].text);
-     }
-   } 
 
-   return filtered;
-}
-function buildPopupStuff(entities)
+jQuery(document).ready((function($)
 {
-  var hnst_query = entities;
+  var hnst_query = new Array('catheter','infection','patient');
 	
-	if(typeof(hnst_query) != 'undefined'){
+  if(typeof(hnst_query) != 'undefined'){
     var area; var i; var s;
     for (s in hnst_areas){
-      area = jQuery(hnst_areas[s]);
+      area = $(hnst_areas[s]);
       if (area.length != 0){
         for (var l = 0; l<area.length; l++) {
 		for (i in hnst_query){
@@ -50,74 +26,26 @@ function buildPopupStuff(entities)
       	break;
       }
     }
-	}
 
-	function connectBubble()
-	{
-		jQuery('.bubbleInfo').each(function () {
-	            var distance = 10;
-	            var time = 250;
-	            var hideDelay = 500;
+	$('.trigger').CreateBubblePopup({
+												selectable: true,
 
-	            var hideDelayTimer = null;
+												position : 'top',
+												align	 : 'center',
 
-	            var beingShown = false;
-	            var shown = false;
-	            var trigger = $('.trigger');
-	            var info = $('.popup', this).css('opacity', 0);
+												innerHtml: 'Take a look to the HTML source of this page <br /> \
+															to learn how the plugin works!',
 
-	            jQuery('.trigger').mouseover(function () {
-	                if (hideDelayTimer) clearTimeout(hideDelayTimer);
-	                if (beingShown || shown) {
-	                    // don't trigger the animation again
-	                    return;
-	                } else {
-	                    // reset position of info box
-	                    beingShown = true;
+												innerHtmlStyle: {
+																	color:'#FFFFFF', 
+																	'text-align':'center'
+																},
 
-	                    info.css({
-	                        top: -90,
-	                        left: -33,
-	                        display: 'block'
-	                    }).animate({
-	                        top: '-=' + distance + 'px',
-	                        opacity: 1
-	                    }, time, 'swing', function() {
-	                        beingShown = false;
-	                        shown = true;
-	                    });
-	                }
+												themeName: 	'all-black',
+												themePath: 	'http://www.vegabit.com/examples/images/jquerybubblepopup-theme'
 
-	                return false;
-	            }).mouseout(function () {
-	                if (hideDelayTimer) clearTimeout(hideDelayTimer);
-	                hideDelayTimer = setTimeout(function () {
-	                    hideDelayTimer = null;
-	                    info.animate({
-	                        top: '-=' + distance + 'px',
-	                        opacity: 0
-	                    }, time, 'swing', function () {
-	                        shown = false;
-	                        info.css('display', 'none');
-	                    });
+											});
 
-	                }, hideDelay);
 
-	                return false;
-	            });
-	        });
-	}
-
-	connectBubble();
-}
-
-entitiesForPage("http://publications.nice.org.uk/infection-control-cg2/guidance",
-  function(entities) 
-  {
-     var filtered = filterEntitiesForHealthcare(entities);
-     console.log(filtered);
-	 buildPopupStuff(filtered);
   }
-);
-
-
+}));
