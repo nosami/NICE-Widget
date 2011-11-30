@@ -1,7 +1,7 @@
 
 function informationTypesFor(entity,callback)
 {
-   $.ajax({url: "https://api.nice.org.uk/services/search/results/filterby/Types of information?q=" + entity.replace(" ","+"),
+   $.ajax({url: "https://api.nice.org.uk/services/search/results/filterby/Types of information?q=" + entity.text.replace(" ","+"),
            headers: 
            {
                     "Accept": "application/json",
@@ -48,19 +48,23 @@ function filterEntitiesForHealthcare(entities)
 {
    console.log(entities);
    var filtered = [];
-   
+ 
    for(i = 0;i != entities.length; i++)
    {
      if(entities[i].type === 'HealthCondition' || entities[i].type === 'Drug')
      {
        filtered.push({
             text : entities[i].text,
-			markup : function(callback) {markupFor(entities[i],callback)}
+			markup : (function(index) {
+			   return function(callback){
+				   var entity = entities[index];
+				   markupFor(entity,callback)
+			   }
+			})(i)
 		}
 	   );
      }
-   } 
-
+   }
    return filtered;
 }
 
@@ -99,7 +103,7 @@ jQuery(document).ready((function($)
 		}
 	}
 	
-	$('.trigger').CreateBubblePopup({
+	jQuery('.trigger').CreateBubblePopup({
 			selectable: true,
 
 			position : 'top',
@@ -117,14 +121,14 @@ jQuery(document).ready((function($)
 
 	});
     
-	$('.trigger').mouseover(function(){
+	jQuery('.trigger').mouseover(function(){
 				//get a reference object for "this" target element
 				var button = $(this);
 				
 				var entityToLoadSearchFor;
 				for(i = 0;i != hnst_query.length;i++)
 				{ 
-				   if(hnst_query[i].text === button.innerText)
+				   if(hnst_query[i].text === button.text())
 				   {
 				      entityToLoadSearchFor = hnst_query[i];
 				   }
