@@ -54,6 +54,7 @@ function filterEntitiesForHealthcare(entities)
        filtered.push({
             text : entities[i].text,
 			markup : function(callback) {markupFor(entities[i],callback)}
+		}
 	   );
      }
    } 
@@ -119,18 +120,15 @@ jQuery(document).ready((function($)
 				var button = $(this);
 				
 				var entityToLoadSearchFor;
-				for(int i = 0;i != hnst_query.length;i++)
+				for(i = 0;i != hnst_query.length;i++)
 				{ 
-				   if(hnst_query[i].text == button.innerText)
+				   if(hnst_query[i].text === button.innerText)
 				   {
 				      entityToLoadSearchFor = hnst_query[i];
 				   }
-				}
-				
+				}	
 				entityToLoadSearchFor.markup(function(markup) {button.SetBubblePopupInnerHtml(markup,true);});
 		}); //end mouseover event
-	
-
 }
 }));
 
